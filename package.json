@@ -1,0 +1,12 @@
+{
+  "name": "kcapp-announcer",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node kcapp-announcer"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "socket.io": "^2.1.0"
+  }
+}
