@@ -1,5 +1,5 @@
-# kcapp-announcer
-Simple `node` script which listens for certain events from `socket.io` and switches colors on a LED strip depending on player colors
+# kcapp-color
+Simple `node` script which listens for certain events from `socket.io` and switches colors on a LED strip, matching each color configured for a player
 
 ## Install
 1. Clone repository `git clone https://github.com/kcapp/enhancements.git`
