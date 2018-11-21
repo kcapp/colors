@@ -53,6 +53,19 @@ socket.on('new_match', (data) => {
     }
 });
 
+socket.on('warmup_started', (data) => {
+    var matchId = data.match.id;
+    axios.get(API_URL + '/matches/' + matchId)
+        .then(response => {
+            var match = response.data;
+            if (match.venue.id === 4) {
+                setupLegNamespace(match.current_leg_id);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+});
+
 socket.on('leg_finished', (data) => {
     var match = data.match;
     if (match.is_finished) {

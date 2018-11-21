@@ -12,7 +12,7 @@ function write(rgb) {
 }
 
 exports.setup = function (redGPIO, greenGPIO, blueGPIO) {
-    this.PINS = {
+    PINS = {
         RED: new Gpio(redGPIO, { mode: Gpio.OUTPUT }),
         GREEN: new Gpio(greenGPIO, { mode: Gpio.OUTPUT }),
         BLUE: new Gpio(blueGPIO, { mode: Gpio.OUTPUT })
