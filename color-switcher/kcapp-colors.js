@@ -26,7 +26,7 @@ function scoreUpdate(data) {
 }
 function possibleThrow(data) {
     if (data.is_finished) {
-        led.blink('#00ff00', 1000);
+        led.blink('#00ff00', 3000);
     }
 }
 
