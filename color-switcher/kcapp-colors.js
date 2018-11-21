@@ -55,7 +55,7 @@ socket.on('new_match', (data) => {
 
 socket.on('warmup_started', (data) => {
     var matchId = data.match.id;
-    axios.get(API_URL + '/matches/' + matchId)
+    axios.get(API_URL + '/match/' + matchId)
         .then(response => {
             var match = response.data;
             if (match.venue.id === 4) {
