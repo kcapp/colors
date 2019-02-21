@@ -97,7 +97,7 @@ socket.on('order_changed', function(data){
                             var match = response.data;
                             if (match.tournament_id !== null) {
                                 var text = match.tournament.tournament_group_name + " between " +
-                                    players[0].player_name + " vs. " + players[1].player_name + " is about to start... (" + BASE_URL + "/matches/" + match.id + "/spectate)";
+                                    players[0].player_name + " and " + players[1].player_name + " is about to start... (" + BASE_URL + "/matches/" + match.id + "/spectate)";
                                 postToSlack("Official Match:", text);
                             } else {
                                 console.log("Skipping announcement of unofficial match...");
