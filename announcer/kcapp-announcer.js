@@ -160,10 +160,11 @@ schedule.scheduleJob('0 9 * * *', () => {
                     for (var i = group.length - 1; i >= 0; i--) {
                         var match = group[i];
                         var date = moment(match.created_at);
-                        if (!match.is_finished && moment(match.created_at).isBefore()) {
+                        if (!match.is_finished && date.isBefore()) {
                             var home = players[match.players[0]].name;
                             var away = players[match.players[1]].name;
-                            text += date.format('YYYY-MM-DD') + ": " + home + " - " + away + "\n";
+                            var week = date.diff(moment(tournament.start_time), "weeks") + 1;
+                            text += "Week " + week + ": " + home + " - " + away + "\n";
                         }
                     }
                     text += "\n";
