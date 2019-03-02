@@ -139,8 +139,8 @@ socket.on('leg_finished', function (data) {
     }
 });
 
-// Post schedule of overdue matches every day at 09:00
-schedule.scheduleJob('0 9 * * *', () => {
+// Post schedule of overdue matches every weekday at 09:00
+schedule.scheduleJob('0 9 * * 1-5', () => {
     axios.all([
         axios.get(API_URL + "/player"),
         axios.get(API_URL + "/tournament/groups"),
@@ -156,18 +156,24 @@ schedule.scheduleJob('0 9 * * *', () => {
                 var text = 'Pending Matches: :dart: \n';
                 for (var key in matches) {
                     var group = matches[key];
-                    text += "*" + groups[key].name + "*\n";
+                    var groupMatches = "";
                     for (var i = group.length - 1; i >= 0; i--) {
                         var match = group[i];
                         var date = moment(match.created_at);
                         if (!match.is_finished && date.isBefore()) {
-                            var home = players[match.players[0]].name;
-                            var away = players[match.players[1]].name;
+                            var home = players[match.players[0]];
+                            var homePlayerName = home.slack_handle ? home.slack_handle : home.name;
+                            var away = players[match.players[1]];
+                            var awayPlayerName = away.slack_handle ? away.slack_handle : away.name;
                             var week = date.diff(moment(tournament.start_time), "weeks") + 1;
-                            text += "Week " + week + ": " + home + " - " + away + "\n";
+                            groupMatches += "Week " + week + ": " + homePlayerName + " - " + awayPlayerName + "\n";
                         }
                     }
-                    text += "\n";
+                    if (groupMatches !== "") {
+                        text += "*" + groups[key].name + "*\n";
+                        text += groupMatches;
+                        text += "\n";
+                    }
                 }
                 postToSlack(text, "");
             })
@@ -179,4 +185,4 @@ schedule.scheduleJob('0 9 * * *', () => {
     });
 });
 
-console.log("Waiting for events to announce...")
+console.log("Waiting for events to announce...");
