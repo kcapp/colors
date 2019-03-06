@@ -12,12 +12,12 @@ var DO_ANNOUNCE = false;
 
 var socket = io(BASE_URL + ":3000/active");
 
-function postToSlack(prefix, text) {
-    var message = prefix + " " + text;
-    console.log(message);
+function postToSlack(json) {
+    console.log(json);
     if (DO_ANNOUNCE) {
-        axios.post('https://hooks.slack.com/services/' + SLACK_KEY, '{"text":"' + message + '"}')
+        axios.post('https://hooks.slack.com/services/' + SLACK_KEY, json)
             .then(response => {
+                console.log(response);
                 console.log("Successfully announced to Slack!");
             }).catch(error => {
                 console.log(error);
@@ -26,15 +26,67 @@ function postToSlack(prefix, text) {
 }
 
 function getMatchStartText(match, players) {
-    var playersText = "";
-    for (var i = 0; i < players.length; i++) {
-        playersText += players[i].player_name + " vs. ";
-    }
-    playersText = playersText.substring(0, playersText.length - 5);
-    return GUI_URL + "/matches/" + match.id + "/spectate" +
-        " - " + playersText + " (" +
-        match.match_type.name + " - " + match.match_mode.short_name + ")" +
-        (match.venue.name != null ? " @ " + match.venue.name : "");
+    var homePlayer = players[0];
+    var awayPlayer = players[1];
+
+    return `{
+            "text": "",
+            "attachments": [
+                {
+                    "fallback": "Official Match",
+                    "author_name": "Official Match Started :trophy:",
+                    "title": "${match.tournament.tournament_group_name}",
+                    "text": ":dart: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> vs. <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}> is about to start (<${GUI_URL}/matches/${match.id}/spectate|spectate>)",
+                    "mrkdwn_in": [ "text" ],
+                    "actions": [
+                        {
+                            "name": "action",
+                            "type": "button",
+                            "style": "primary",
+                            "text": "Spectate :eyeglasses:",
+                            "url": "${GUI_URL}/matches/${match.id}/spectate"
+                        },
+                        {
+                            "name": "action",
+                            "type": "button",
+                            "text": "Preview :star:",
+                            "url": "${GUI_URL}/matches/${match.id}/preview"
+                        }                
+                    ]
+                }
+            ]
+        }
+    `;
+}
+
+function getMatchEndText(match, players) {
+    var homePlayer = players[0];
+    var awayPlayer = players[1];
+    
+    var homePlayerWins = homePlayer.wins ? homePlayer.wins : 0;
+    var awayPlayerWins = awayPlayer.wins ? awayPlayer.wins : 0;
+    
+    return `{
+        "text": "",
+        "attachments": [
+            {
+                "fallback": "Official Match",
+                "author_name": "Official Match Finished :trophy:",
+                "title": "${match.tournament.tournament_group_name}",
+                "text": ":checkered_flag: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> ${homePlayerWins} - ${awayPlayerWins} <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}>",
+                "mrkdwn_in": [ "text" ],
+                "actions": [
+                    {
+                        "name": "action",
+                        "type": "button",
+                        "style": "primary",
+                        "text": "Results",
+                        "url": "${GUI_URL}/matches/${match.id}/results"
+                    }
+                ]
+            }
+        ]
+    }`;
 }
 
 socket.on('new_match', function (data) {
@@ -42,8 +94,7 @@ socket.on('new_match', function (data) {
     axios.get(API_URL + "/leg/" + match.current_leg_id + "/players")
         .then(response => {
             var players = response.data;
-            var text = getMatchStartText(match, players);
-            postToSlack("New active match:", text);
+            //postToSlack(getMatchStartText(match, players));
         }).catch(error => {
             console.log(error);
         });
@@ -56,8 +107,7 @@ socket.on('first_throw', function (data) {
         .then(response => {
             var match = response.data;
             if (match.tournament_id !== null) {
-                var text = getMatchStartText(match, players);
-                postToSlack("Official match started:", text);
+                //postToSlack(getMatchStartText(match, players));
             } else {
                 console.log("Skipping announcement of unofficial match...");
             }
@@ -67,8 +117,8 @@ socket.on('first_throw', function (data) {
 });
 
 socket.on('warmup_started', function (data) {
-    var legId = data.leg_id;
-    var matchId = data.match_id;
+    var legId = data.leg.id;
+    var matchId = data.leg.match_id;
     axios.all([
         axios.get(API_URL + "/leg/" + legId + "/players"),
         axios.get(API_URL + "/match/" + matchId)
@@ -76,9 +126,7 @@ socket.on('warmup_started', function (data) {
         var players = playersResponse.data;
         var match = matchResponse.data;
         if (match.tournament_id !== null) {
-            var text = match.tournament.tournament_group_name + " > " +
-                players[0].player_name + " vs. " + players[1].player_name + ", players warming up! (" + BASE_URL + "/matches/" + match.id + "/spectate)";
-            postToSlack("Official Match:", text);
+            //postToSlack(text);
         } else {
             console.log("Skipping announcement of unofficial match...");
         }
@@ -99,9 +147,7 @@ socket.on('order_changed', function (data) {
                         .then(response => {
                             var match = response.data;
                             if (match.tournament_id !== null) {
-                                var text = match.tournament.tournament_group_name + " between " +
-                                    players[0].player_name + " and " + players[1].player_name + " is about to start... (" + GUI_URL + "/matches/" + match.id + "/spectate)";
-                                postToSlack("Official Match:", text);
+                                postToSlack(getMatchStartText(match, players));
                             } else {
                                 console.log("Skipping announcement of unofficial match...");
                             }
@@ -124,14 +170,7 @@ socket.on('leg_finished', function (data) {
         axios.get(API_URL + "/leg/" + match.current_leg_id + "/players")
             .then(response => {
                 var players = response.data;
-                var playersText = players[0].player_name + "  (" + (players[0].wins ? players[0].wins : 0) + ") - ";
-                for (var i = 1; i < players.length; i++) {
-                    playersText += "(" + (players[i].wins ? players[i].wins : 0) + ") " + players[i].player_name + " - ";
-                }
-                playersText = playersText.substring(0, playersText.length - 3);
-
-                var text = GUI_URL + "/matches/" + match.id + "/spectate - " + playersText
-                postToSlack("Match finished:", text);
+                postToSlack(getMatchEndText(match, players));
             })
             .catch(error => {
                 console.log(error);
