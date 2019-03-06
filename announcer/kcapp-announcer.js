@@ -17,7 +17,6 @@ function postToSlack(json) {
     if (DO_ANNOUNCE) {
         axios.post('https://hooks.slack.com/services/' + SLACK_KEY, json)
             .then(response => {
-                console.log(response);
                 console.log("Successfully announced to Slack!");
             }).catch(error => {
                 console.log(error);
