@@ -36,7 +36,7 @@ function getMatchStartText(match, players) {
                     "fallback": "Official Match",
                     "author_name": "Official Match Started :trophy:",
                     "title": "${match.tournament.tournament_group_name}",
-                    "text": ":dart: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> vs. <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}> is about to start (<${GUI_URL}/matches/${match.id}/spectate|spectate>)",
+                    "text": ":dart: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> vs. <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}> is about to start",
                     "mrkdwn_in": [ "text" ],
                     "actions": [
                         {
