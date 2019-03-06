@@ -213,7 +213,7 @@ schedule.scheduleJob('0 9 * * 1-5', () => {
                         text += "\n";
                     }
                 }
-                postToSlack(text, "");
+                postToSlack('{ "text" : "' + text + '"}');
             })
             .catch(error => {
                 console.log(error);
