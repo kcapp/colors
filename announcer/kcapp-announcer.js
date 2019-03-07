@@ -2,6 +2,7 @@ var axios = require('axios');
 var moment = require('moment');
 var io = require("socket.io-client");
 var schedule = require("node-schedule");
+var _ = require("underscore");
 
 var BASE_URL = "http://localhost";
 var API_URL = BASE_URL + ":8001";
@@ -80,7 +81,7 @@ function getMatchEndText(match, players) {
                         "type": "button",
                         "style": "primary",
                         "text": "Results",
-                        "url": "${GUI_URL}/matches/${match.id}/results"
+                        "url": "${GUI_URL}/matches/${match.id}/result"
                     }
                 ]
             }
@@ -177,8 +178,8 @@ socket.on('leg_finished', function (data) {
     }
 });
 
-// Post schedule of overdue matches every weekday at 09:00
-schedule.scheduleJob('0 9 * * 1-5', () => {
+// Post schedule of overdue matches every weekday at 09:00 CEST
+schedule.scheduleJob('0 8 * * 1-5', () => {
     axios.all([
         axios.get(API_URL + "/player"),
         axios.get(API_URL + "/tournament/groups"),
@@ -190,30 +191,59 @@ schedule.scheduleJob('0 9 * * 1-5', () => {
         axios.get(API_URL + "/tournament/" + tournament.id + "/matches")
             .then(response => {
                 var matches = response.data;
-
-                var text = 'Pending Matches: :dart: \n';
-                for (var key in matches) {
-                    var group = matches[key];
+    
+                var text = `{ "text": "Pending Official Matches :trophy:", "attachments": [`
+                for (var groupId in matches) {
+                    var group = matches[groupId];
+                    
+                    var newMatches = _.filter(group, (match) => {
+                        return !match.is_finished && moment(match.created_at).isBefore();
+                    });
+                    if (newMatches.length === 0) {
+                        continue;
+                    }
+                    
                     var groupMatches = "";
-                    for (var i = group.length - 1; i >= 0; i--) {
-                        var match = group[i];
-                        var date = moment(match.created_at);
-                        if (!match.is_finished && date.isBefore()) {
-                            var home = players[match.players[0]];
-                            var homePlayerName = home.slack_handle ? home.slack_handle : home.name;
-                            var away = players[match.players[1]];
-                            var awayPlayerName = away.slack_handle ? away.slack_handle : away.name;
-                            var week = date.diff(moment(tournament.start_time), "weeks") + 1;
-                            groupMatches += "Week " + week + ": " + homePlayerName + " - " + awayPlayerName + "\n";
-                        }
+                    for (var i = newMatches.length - 1; i >= 0; i--) {
+                        var match = newMatches[i];
+    
+                        var home = players[match.players[0]];
+                        var homePlayerName = home.slack_handle ? `<${home.slack_handle}>` : home.name;
+                        var away = players[match.players[1]];
+                        var awayPlayerName = away.slack_handle ? `<${away.slack_handle}>` : away.name;
+                        var week = moment(match.created_at).diff(moment(tournament.start_time), "weeks") + 1;
+                        groupMatches += `*Week ${week}*: ${homePlayerName} - ${awayPlayerName}\\n`;
                     }
-                    if (groupMatches !== "") {
-                        text += "*" + groups[key].name + "*\n";
-                        text += groupMatches;
-                        text += "\n";
-                    }
+    
+                    text += `{
+                            "fallback": "${groups[groupId].name} Pending Matches",
+                            "author_name": "",
+                            "title": "${groups[groupId].name}",
+                            "text": "${groupMatches}",
+                            "mrkdwn_in": [ "text" ],
+                            "actions": [
+                                {
+                                    "name": "action",
+                                    "type": "button",
+                                    "style": "primary",
+                                    "text": "Standings",
+                                    "url": "${GUI_URL}/tournaments/${tournament.id}"
+                                },                            
+                                {
+                                    "name": "action",
+                                    "type": "button",
+                                    "text": "Matches",
+                                    "url": "${GUI_URL}/tournaments/${tournament.id}#unplayed"
+                                }
+                            ]
+                        },`
                 }
-                postToSlack('{ "text" : "' + text + '"}');
+                text = text.substring(0, text.length - 1);
+                text += `] }`;
+    
+                if (text !== `{ "text": "Pending Official Matches :trophy:", "attachments": ] }`) {
+                    postToSlack(text);
+                }
             })
             .catch(error => {
                 console.log(error);
