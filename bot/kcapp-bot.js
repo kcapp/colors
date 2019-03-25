@@ -20,22 +20,13 @@ kcapp.connect(() => {
             kcapp.connectLegNamespace(legId, (socket) => {
                 socket.on('score_update', (data) => {
                     var leg = data.leg;
-                    var players = data.players;
-
                     if (data.is_finished) {
                         debug("Leg is finished");
                         return;
                     }
 
                     if (leg.current_player_id === bot.id) {
-                        var player;
-                        for (var i = 0; i < players.length; i++) {
-                            // TODO move this check into leg-handler?
-                            var player = players[i];
-                            if (player.player_id === botId) {
-                                player = player;
-                            }
-                        }
+                        var player = socket.currentPlayer;
                         if (player.current_score <= 100) {
                             var thrown = 0;
                             while (thrown < 3) {
