@@ -9,7 +9,7 @@ exports.PERFECT = 4;
 const BOARD = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
 
 /** Array holding multiplier values of the dart board in a circular order */
-const BOARD_MULTIPLIERS = [0, 1, 3, 1, 2, 0];
+const BOARD_MULTIPLIERS = [1, 3, 1, 2];
 
 /** Preferred checkouts for different numbers */
 const CHECKOUT_GUIDE = {
@@ -179,7 +179,7 @@ function getAdjacent(list, idx, number) {
         } else {
             newList.push(list[idx - i]);
         }
-        if (idx + i > list.length) {
+        if (idx + i >= list.length) {
             newList.push(list[list.length - idx - i]);
         } else {
             newList.push(list[idx + i]);
@@ -210,10 +210,8 @@ exports.attemptThrow = (number, multiplier) => {
             score = getRandom(BOARD);
             multiplier = 1;
         } else {
-            var idx = BOARD.indexOf(number);
-            score = getRandom(getAdjacent(BOARD, idx, this.missRange));
-            idx = BOARD_MULTIPLIERS.indexOf(multiplier);
-            multiplier = getRandom(getAdjacent(BOARD_MULTIPLIERS, idx, 1));
+            score = getRandom(getAdjacent(BOARD, BOARD.indexOf(number), this.missRange));
+            multiplier = getRandom(getAdjacent(BOARD_MULTIPLIERS, BOARD_MULTIPLIERS.indexOf(multiplier), 1));
         }
         return { score: score, multiplier: multiplier };
     }
@@ -243,13 +241,14 @@ exports.attemptCheckout = (currentScore, thrown) => {
                 var dart = this.attemptThrow(20, 1);
                 darts.push(dart);
                 currentScore -= dart.score * dart.multiplier;
-                if (currentScore <= 0) {
+                if (currentScore <= 1) {
                     break;
                 }
             }
         }
     } else {
-        debug("Score is less than 40, lets just try to checkout");
+        // TODO Only attempt checkout if we have an even number
+        debug(`Score is ${currentScore}, trying to checkout`);
         for (var i = thrown; i < 3; i++) {
             var dart = this.attemptThrow(currentScore / 2, 2);
             darts.push(dart);

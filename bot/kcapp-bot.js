@@ -1,14 +1,14 @@
 var debug = require('debug')('kcapp-bot:main');
 var sleep = require('sleep');
 
-var bot = require('./bot')(132);
-bot.new(bot.MEDIUM);
+var bot = require('./bot')(162);
+bot.new(bot.EASY);
 
 function isOdd(number) {
     return number % 2 === 1;
 }
 
-var player = { current_score: 301 };
+var player = { current_score: 8 };
 function doThrows() {
     var thrown = 0;
     debug("Starting score " + player.current_score);
@@ -26,12 +26,15 @@ function doThrows() {
             }
             debug("Got " + JSON.stringify(darts));
             thrown += darts.length;
+            if (player.current_score <= 1) {
+                break;
+            }
         }
         thrown++;
     }
     debug("Score remaining " + player.current_score);
 }
-//doThrows();
+doThrows();
 
 
 var kcapp = require('kcapp-sio-client/kcapp')("localhost", 3000);
@@ -71,6 +74,7 @@ kcapp.connect(() => {
                         thrown++;
                         sleep.msleep(500);
                     }
+                    debug("Sending visit");
                     sleep.msleep(1000);
                     socket.emitVisit();
                 } else {
