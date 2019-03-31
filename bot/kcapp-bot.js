@@ -1,7 +1,7 @@
 var debug = require('debug')('kcapp-bot:main');
 var sleep = require('sleep');
 
-var bot = require('./bot')(3);
+var bot = require('./bot')(163);
 bot.new(bot.EASY);
 
 function doScore(socket) {
@@ -34,7 +34,6 @@ function doScore(socket) {
         debug("Not my turn, waiting...");
     }
 }
-
 
 var kcapp = require('kcapp-sio-client/kcapp')("localhost", 3000);
 kcapp.connect(() => {
