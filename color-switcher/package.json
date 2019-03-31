@@ -1,13 +1,13 @@
 {
-  "name": "kcapp-colors",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node kcapp-colors"
-  },
-  "dependencies": {
-    "axios": "^0.18.0",
-    "socket.io": "^2.1.0",
-    "pigpio": "^1.1.4"
-  }
+    "name": "kcapp-colors",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node kcapp-colors"
+    },
+    "dependencies": {
+        "debug": "^4.1.1",
+        "kcapp-sio-client": "github:kcapp/kcapp-sio-client",
+        "pigpio": "^1.1.4"
+    }
 }
