@@ -41,5 +41,3 @@ kcapp.connect(() => {
         connectToMatch(data);
     });
 });
-
-debug("Waiting for events to change colors...")
