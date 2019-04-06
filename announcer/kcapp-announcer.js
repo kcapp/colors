@@ -197,7 +197,7 @@ schedule.scheduleJob('0 8 * * 1-5', () => {
                     var group = matches[groupId];
                     
                     var newMatches = _.filter(group, (match) => {
-                        return !match.is_finished && moment(match.created_at).isBefore();
+                        return !match.is_finished && moment(match.created_at).isSameOrBefore(moment(), 'day');
                     });
                     if (newMatches.length === 0) {
                         continue;
