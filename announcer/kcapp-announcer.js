@@ -36,23 +36,8 @@ function getMatchStartText(match, players) {
                     "fallback": "Official Match",
                     "author_name": "Official Match Started :trophy:",
                     "title": "${match.tournament.tournament_group_name}",
-                    "text": ":dart: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> vs. <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}> is about to start",
-                    "mrkdwn_in": [ "text" ],
-                    "actions": [
-                        {
-                            "name": "action",
-                            "type": "button",
-                            "style": "primary",
-                            "text": "Spectate :eyeglasses:",
-                            "url": "${GUI_URL}/matches/${match.id}/spectate"
-                        },
-                        {
-                            "name": "action",
-                            "type": "button",
-                            "text": "Preview :star:",
-                            "url": "${GUI_URL}/matches/${match.id}/preview"
-                        }                
-                    ]
+                    "text": ":dart: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> vs. <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}> is about to start. <${GUI_URL}/matches/${match.id}/spectate|Spectate>",
+                    "mrkdwn_in": [ "text" ]
                 }
             ]
         }
@@ -73,17 +58,8 @@ function getMatchEndText(match, players) {
                 "fallback": "Official Match",
                 "author_name": "Official Match Finished :trophy:",
                 "title": "${match.tournament.tournament_group_name}",
-                "text": ":checkered_flag: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> ${homePlayerWins} - ${awayPlayerWins} <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}>",
-                "mrkdwn_in": [ "text" ],
-                "actions": [
-                    {
-                        "name": "action",
-                        "type": "button",
-                        "style": "primary",
-                        "text": "Results",
-                        "url": "${GUI_URL}/matches/${match.id}/result"
-                    }
-                ]
+                "text": ":checkered_flag: <${GUI_URL}/players/${homePlayer.player_id}/statistics|${homePlayer.player_name}> ${homePlayerWins} - ${awayPlayerWins} <${GUI_URL}/players/${awayPlayer.player_id}/statistics|${awayPlayer.player_name}>. <${GUI_URL}/matches/${match.id}/result|Result>",
+                "mrkdwn_in": [ "text" ]
             }
         ]
     }`;
@@ -220,22 +196,7 @@ schedule.scheduleJob('0 8 * * 1-5', () => {
                             "author_name": "",
                             "title": "${groups[groupId].name}",
                             "text": "${groupMatches}",
-                            "mrkdwn_in": [ "text" ],
-                            "actions": [
-                                {
-                                    "name": "action",
-                                    "type": "button",
-                                    "style": "primary",
-                                    "text": "Standings",
-                                    "url": "${GUI_URL}/tournaments/${tournament.id}"
-                                },                            
-                                {
-                                    "name": "action",
-                                    "type": "button",
-                                    "text": "Matches",
-                                    "url": "${GUI_URL}/tournaments/${tournament.id}#unplayed"
-                                }
-                            ]
+                            "mrkdwn_in": [ "text" ]
                         },`
                 }
                 text = text.substring(0, text.length - 1);
