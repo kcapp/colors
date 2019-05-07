@@ -10,7 +10,7 @@ var BASE_URL = "http://localhost";
 var API_URL = BASE_URL + ":8001";
 var GUI_URL = BASE_URL;
 
-var SLACK_KEY = "<slack_key_goes_here>";
+var SLACK_KEY = process.env.SLACK_KEY || "<slack_key_goes_here>";
 var DO_ANNOUNCE = false;
 
 var socket = io(BASE_URL + ":3000/active");
