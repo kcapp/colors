@@ -37,7 +37,7 @@ exports.setColor = (color) => {
         debug("Unable to convert '" + color + "' ro RGB");
         return;
     }
-    write(rgb);
+    write.bind(this)(rgb);
 }
 
 /**
@@ -45,7 +45,7 @@ exports.setColor = (color) => {
  */
 exports.turnOff = () => {
     debug("Disabled lights");
-    write({ r: 0, g: 0, b: 0 });
+    write.bind(this)({ r: 0, g: 0, b: 0 });
 }
 
 /**
