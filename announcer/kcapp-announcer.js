@@ -1,3 +1,4 @@
+var debug = require('debug')('kcapp-announcer');
 var axios = require('axios');
 var moment = require('moment');
 var io = require("socket.io-client");
@@ -16,13 +17,13 @@ var DO_ANNOUNCE = false;
 var socket = io(BASE_URL + ":3000/active");
 
 function postToSlack(json) {
-    console.log(json);
+    debug(json);
     if (DO_ANNOUNCE) {
         axios.post('https://hooks.slack.com/services/' + SLACK_KEY, json)
             .then(response => {
-                console.log("Successfully announced to Slack!");
+                debug("Successfully announced to Slack!");
             }).catch(error => {
-                console.log(error);
+                debug(error);
             });
     }
 }
@@ -81,31 +82,30 @@ socket.on('order_changed', function (data) {
                             if (match.tournament_id !== null && match.tournament.office_id == officeId) {
                                 postToSlack(getMatchStartText(match, players));
                             } else {
-                                console.log("Skipping announcement of unofficial match...");
+                                debug("Skipping announcement of unofficial match...");
                             }
                         }).catch(error => {
-                            console.log(error);
+                            debug(error);
                         });
                 }).catch(error => {
-                    console.log(error);
+                    debug(error);
                 });
         }).catch(error => {
-            console.log(error);
+            debug(error);
         });
 });
 
 socket.on('leg_finished', function (data) {
     var match = data.match;
-    var leg = data.leg;
 
     if (match.is_finished && match.tournament_id !== null && match.tournament.office_id == officeId) {
-        axios.get(API_URL + "/leg/" + match.current_leg_id + "/players")
+        axios.get(API_URL + "/leg/" + match.legs[0].id + "/players")
             .then(response => {
                 var players = response.data;
                 postToSlack(getMatchEndText(match, players));
             })
             .catch(error => {
-                console.log(error);
+                debug(error);
             });
     }
 });
@@ -163,11 +163,11 @@ schedule.scheduleJob('0 8 * * 1-5', () => {
                 }
             })
             .catch(error => {
-                console.log(error);
+                debug(error);
             });
     })).catch(error => {
-        console.log(error);
+        debug(error);
     });
 });
 
-console.log(`Waiting for events to announce for office id ${officeId}...`);
+debug(`Waiting for events to announce for office id ${officeId}...`);

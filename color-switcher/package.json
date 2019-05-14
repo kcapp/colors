@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "start": "node kcapp-colors"
+        "start": "node kcapp-colors.js"
     },
     "dependencies": {
         "debug": "^4.1.1",

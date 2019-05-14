@@ -1,5 +1,5 @@
 var debug = require('debug')('kcapp-color-switcher:main');
-var led = require("./led_util")(17, 22, 24);
+var led = require("./led-util")(17, 22, 24);
 
 function connectToMatch(data) {
     var match = data.match;
@@ -11,7 +11,7 @@ function connectToMatch(data) {
             socket.on('score_update', (data) => {
                 var player = socket.currentPlayer.player;
                 debug("Setting color for " + player.name + " = " + player.color);
-                led.setColor(players[0].player.color);
+                led.setColor(player.color);
             });
 
             socket.on('leg_finished', (data) => {
@@ -27,7 +27,7 @@ function connectToMatch(data) {
 
             var player = socket.currentPlayer.player;
             debug("Setting color for " + player.name + " = " + player.color);
-            led.setColor(players[0].player.color);
+            led.setColor(player.color);
         });
     }
 }
@@ -41,3 +41,4 @@ kcapp.connect(() => {
         connectToMatch(data);
     });
 });
+debug("Waiting for events to change colors...");

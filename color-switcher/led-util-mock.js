@@ -1,5 +1,4 @@
-var debug = require('debug')('kcapp-color-switcher:led');
-var Gpio = require('pigpio').Gpio;
+var debug = require('debug')('kcapp-color-switcher:led-mock');
 
 /**
  * Write values for each pin to the given values
@@ -7,7 +6,7 @@ var Gpio = require('pigpio').Gpio;
  */
 function write(rgb) {
     if (rgb && rgb != null) {
-        debug("Writing lights " + JSON.stringify(rgb));
+        debug("Setting lights " + JSON.stringify(rgb));
         this.PINS.RED.pwmWrite(rgb.r);
         this.PINS.GREEN.pwmWrite(rgb.g);
         this.PINS.BLUE.pwmWrite(rgb.b);
@@ -37,7 +36,7 @@ exports.setColor = (color) => {
         debug("Unable to convert '" + color + "' ro RGB");
         return;
     }
-    write(rgb);
+    write.bind(this)(rgb);
 }
 
 /**
@@ -45,7 +44,7 @@ exports.setColor = (color) => {
  */
 exports.turnOff = () => {
     debug("Disabled lights");
-    write({ r: 0, g: 0, b: 0 });
+    write.bind(this)({ r: 0, g: 0, b: 0 });
 }
 
 /**
@@ -81,9 +80,9 @@ exports.blink = (color, time) => {
  */
 module.exports = (redGPIO, greenGPIO, blueGPIO) => {
     this.PINS = {
-        RED: new Gpio(redGPIO, { mode: Gpio.OUTPUT }),
-        GREEN: new Gpio(greenGPIO, { mode: Gpio.OUTPUT }),
-        BLUE: new Gpio(blueGPIO, { mode: Gpio.OUTPUT })
+        RED: { pwmWrite: (color) => { debug(`Set RED color = ${color}`)}},
+        GREEN: { pwmWrite: (color) => { debug(`Set GREEN color = ${color}`)}},
+        BLUE: { pwmWrite: (color) => { debug(`Set BLUE color = ${color}`)}}
     }
     return this;
 }
