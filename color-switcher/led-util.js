@@ -59,7 +59,7 @@ exports.blink = (color, time) => {
     var blinker = setInterval(() => {
         debug("Blinking " + color + "!");
         if (enable) {
-            write(rgb);
+            write.bind(this)(rgb);
         } else {
             this.turnOff();
         }

@@ -3,7 +3,7 @@ var led = require("./led-util")(17, 22, 24);
 
 function connectToMatch(data) {
     var match = data.match;
-    if (match.venue.id === kcapp.DART_REIDAR_VENUE_ID) {
+    if (match.venue && match.venue.id === kcapp.DART_REIDAR_VENUE_ID) {
         var legId = match.current_leg_id;
         debug(`Connected to match ${match.id}`);
 
