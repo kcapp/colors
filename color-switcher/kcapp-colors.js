@@ -29,6 +29,11 @@ function connectToMatch(data) {
                 }
             });
 
+            socket.on('cancelled', (data) => {
+                debug("Leg cancelled, disabling lights");
+                led.turnOff();
+            });
+
             var player = socket.currentPlayer.player;
             debug("Setting color for " + player.name + " = " + player.color);
             led.setColor(player.color);
