@@ -1,5 +1,5 @@
 var debug = require('debug')('kcapp-color-switcher:main');
-var led = require("./led-util-mock")(17, 22, 24);
+var led = require("./led-util")(17, 22, 24);
 
 function connectToMatch(data) {
     var match = data.match;

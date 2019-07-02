@@ -31,7 +31,7 @@ exports.hexToRGB = (hex) => {
  * Set the LEDs to the given hex color
  * @param {string} color - Hex color to set
  */
-exports.setColor = (color) => {
+exports.setColor = async (color) => {
     if (this.blinking) {
         debug("Waiting for blink to finish...");
         await sleep(3000);
