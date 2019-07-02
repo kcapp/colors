@@ -1,5 +1,9 @@
 var debug = require('debug')('kcapp-color-switcher:led-mock');
 
+function sleep(ms){
+    return new Promise(resolve => { setTimeout(resolve, ms) });
+}
+
 /**
  * Write values for each pin to the given values
  * @param {object} rgb - Object containing r,g,b values to set
@@ -30,10 +34,14 @@ exports.hexToRGB = (hex) => {
  * Set the LEDs to the given hex color
  * @param {string} color - Hex color to set
  */
-exports.setColor = (color) => {
+exports.setColor = async (color) => {
+    if (this.blinking) {
+        debug("Waiting for blink to finish...");
+        await sleep(3000);
+    }
     rgb = this.hexToRGB(color);
     if (rgb === null) {
-        debug("Unable to convert '" + color + "' ro RGB");
+        debug("Unable to convert '" + color + "' to RGB");
         return;
     }
     write.bind(this)(rgb);
@@ -55,19 +63,22 @@ exports.turnOff = () => {
 exports.blink = (color, time) => {
     rgb = this.hexToRGB(color);
     var enable = true;
+    this.blinking = true;
     var blinker = setInterval(() => {
         debug("Blinking " + color + "!");
         if (enable) {
-            write(rgb);
+            write.bind(this)(rgb);
         } else {
             this.turnOff();
         }
         enable = !enable;
     }, 150);
 
+
     setTimeout(() => {
         clearInterval(blinker);
         debug("Stopped blinking...");
+        this.blinking = false;
         this.turnOff();
     }, time);
 }
@@ -80,9 +91,10 @@ exports.blink = (color, time) => {
  */
 module.exports = (redGPIO, greenGPIO, blueGPIO) => {
     this.PINS = {
-        RED: { pwmWrite: (color) => { debug(`Set RED color = ${color}`)}},
-        GREEN: { pwmWrite: (color) => { debug(`Set GREEN color = ${color}`)}},
-        BLUE: { pwmWrite: (color) => { debug(`Set BLUE color = ${color}`)}}
+        RED: { pwmWrite: (color) => { /*debug(`Set RED color = ${color}`)*/}},
+        GREEN: { pwmWrite: (color) => { /*debug(`Set GREEN color = ${color}`)*/}},
+        BLUE: { pwmWrite: (color) => { /*debug(`Set BLUE color = ${color}`)*/}}
     }
+    this.blinking = false;
     return this;
 }

@@ -32,9 +32,13 @@ exports.hexToRGB = (hex) => {
  * @param {string} color - Hex color to set
  */
 exports.setColor = (color) => {
+    if (this.blinking) {
+        debug("Waiting for blink to finish...");
+        await sleep(3000);
+    }
     rgb = this.hexToRGB(color);
     if (rgb === null) {
-        debug("Unable to convert '" + color + "' ro RGB");
+        debug("Unable to convert '" + color + "' to RGB");
         return;
     }
     write.bind(this)(rgb);
@@ -56,6 +60,7 @@ exports.turnOff = () => {
 exports.blink = (color, time) => {
     rgb = this.hexToRGB(color);
     var enable = true;
+    this.blinking = true;
     var blinker = setInterval(() => {
         debug("Blinking " + color + "!");
         if (enable) {
@@ -69,6 +74,7 @@ exports.blink = (color, time) => {
     setTimeout(() => {
         clearInterval(blinker);
         debug("Stopped blinking...");
+        this.blinking = false;
         this.turnOff();
     }, time);
 }
@@ -85,5 +91,6 @@ module.exports = (redGPIO, greenGPIO, blueGPIO) => {
         GREEN: new Gpio(greenGPIO, { mode: Gpio.OUTPUT }),
         BLUE: new Gpio(blueGPIO, { mode: Gpio.OUTPUT })
     }
+    this.blinking = false;
     return this;
 }

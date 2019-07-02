@@ -1,5 +1,5 @@
 var debug = require('debug')('kcapp-color-switcher:main');
-var led = require("./led-util")(17, 22, 24);
+var led = require("./led-util-mock")(17, 22, 24);
 
 function connectToMatch(data) {
     var match = data.match;
@@ -16,12 +16,16 @@ function connectToMatch(data) {
 
             socket.on('leg_finished', (data) => {
                 var match = data.match;
+
+                debug("Blinking lights for 4s");
+                led.blink('#00ff00', 4000);
+
                 if (match.is_finished) {
-                    debug("Disabling lights in 5s");
-                    setTimeout(() => led.turnOff(), 5000);
-                } else {
-                    debug("Blinking lights for 4s");
-                    led.blink('#00ff00', 4000);
+                    debug("Disabling lights in 6s");
+                    setTimeout(() => {
+                        debug("Disabling lights");
+                        led.turnOff();
+                    }, 6000);
                 }
             });
 
