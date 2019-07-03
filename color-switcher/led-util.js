@@ -1,6 +1,10 @@
 var debug = require('debug')('kcapp-color-switcher:led');
 var Gpio = require('pigpio').Gpio;
 
+function sleep(ms){
+    return new Promise(resolve => { setTimeout(resolve, ms) });
+}
+
 /**
  * Write values for each pin to the given values
  * @param {object} rgb - Object containing r,g,b values to set
