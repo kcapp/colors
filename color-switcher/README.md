@@ -4,9 +4,12 @@ Simple `node` script which listens for certain events from `socket.io` and switc
 ## Install
 1. Clone repository `git clone https://github.com/kcapp/enhancements.git`
 2. Install all node dependencies `npm install`
-3. Make sure to set correct `GPIO` pins in `kcapp-colors.js`
-4. Run with `node kcapp-colors.js`
+3. Make sure to set correct `GPIO` pins for the `RGB` strip in `kcapp-colors.js`
+```js
+const led = require("./led-util")(R, G, B);
+```
+4. Run with `npm start`
+5. Test (on a non-RPi) with `npm run mock`
 
-## Update
-1. Pull latest changes `git pull`
-2. Install all new `node` dependencies `npm install`
+## Troubleshooting
+Make sure `match` is started in a venue with `has_led_lights` enabled.

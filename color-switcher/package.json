@@ -3,11 +3,17 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "start": "node kcapp-colors.js"
+        "start": "NODE_ENV=rpi node kcapp-colors.js",
+        "mock": "PIGPIO_NO_LOGGING=true node kcapp-colors.js"
     },
     "dependencies": {
         "debug": "^4.1.1",
-        "kcapp-sio-client": "github:kcapp/kcapp-sio-client",
+        "kcapp-sio-client": "github:kcapp/kcapp-sio-client"
+    },
+    "optionalDependencies": {
         "pigpio": "^1.1.4"
+    },
+    "devDependencies": {
+        "pigpio-mock": "^0.0.1"
     }
 }

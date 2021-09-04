@@ -1,8 +1,11 @@
-var debug = require('debug')('kcapp-color-switcher:led');
-var Gpio = require('pigpio').Gpio;
+const debug = require('debug')('kcapp-color-switcher:led');
+const pigpio = process.env.NODE_ENV === "rpi" ? require('pigpio') : require('pigpio-mock');
+const Gpio = pigpio.Gpio;
 
 function sleep(ms){
-    return new Promise(resolve => { setTimeout(resolve, ms) });
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    });
 }
 
 /**
@@ -11,7 +14,7 @@ function sleep(ms){
  */
 function write(rgb) {
     if (rgb && rgb != null) {
-        debug("Setting lights " + JSON.stringify(rgb));
+        debug(`Setting lights ${JSON.stringify(rgb)}`);
         this.PINS.RED.pwmWrite(rgb.r);
         this.PINS.GREEN.pwmWrite(rgb.g);
         this.PINS.BLUE.pwmWrite(rgb.b);
@@ -23,7 +26,7 @@ function write(rgb) {
  * @param {string} hex - Hex to convert
  */
 exports.hexToRGB = (hex) => {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
@@ -40,9 +43,9 @@ exports.setColor = async (color) => {
         debug("Waiting for blink to finish...");
         await sleep(3000);
     }
-    rgb = this.hexToRGB(color);
+    const rgb = this.hexToRGB(color);
     if (rgb === null) {
-        debug("Unable to convert '" + color + "' to RGB");
+        debug(`Unable to convert '${color}' to RGB`);
         return;
     }
     write.bind(this)(rgb);
@@ -60,13 +63,15 @@ exports.turnOff = () => {
  * Blink the LEDs in the given color
  * @param {string} color - Hex color to blink
  * @param {int} time - Time in ms to blink
+ * @param {function} callback - Callback once blinking is finished
  */
-exports.blink = (color, time) => {
-    rgb = this.hexToRGB(color);
-    var enable = true;
+ exports.blink = (color, time, callback) => {
+    const rgb = this.hexToRGB(color);
+    let enable = true;
     this.blinking = true;
-    var blinker = setInterval(() => {
-        debug("Blinking " + color + "!");
+
+    const blinker = setInterval(() => {
+        debug(`Blinking ${color}!`);
         if (enable) {
             write.bind(this)(rgb);
         } else {
@@ -80,6 +85,8 @@ exports.blink = (color, time) => {
         debug("Stopped blinking...");
         this.blinking = false;
         this.turnOff();
+
+        callback();
     }, time);
 }
 
