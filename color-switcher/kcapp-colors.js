@@ -42,7 +42,9 @@ function controlLights(socket) {
         led.turnOff();
     });
 
-    setLightsToCurrentPlayer();
+    if (socket.leg && !socket.leg.is_finished) {
+        setLightsToCurrentPlayer();
+    }
 }
 
 function connectToMatch(data) {
