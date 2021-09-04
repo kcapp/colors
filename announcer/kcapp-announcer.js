@@ -144,7 +144,7 @@ schedule.scheduleJob('0 8 * * 1-5', () => {
                         var away = players[match.players[1]];
                         var awayPlayerName = away.slack_handle ? `<${away.slack_handle}>` : away.name;
                         var week = moment(match.created_at).diff(moment(tournament.start_time), "weeks") + 1;
-                        groupMatches += `*Week ${week}*: ${homePlayerName} - ${awayPlayerName}\n`;
+                        groupMatches += `Week ${week}: ${homePlayerName} - ${awayPlayerName}\n`;
                     }
 
                     text += `{
