@@ -1,6 +1,12 @@
 const debug = require('debug')('kcapp-color-switcher:main');
-const led = require("./led-util")(17, 22, 24);
-const kcapp = require('kcapp-sio-client/kcapp')("localhost", 3000, "kcapp-colors", "http");
+const RED = process.env.RED || 17;
+const GREEN = process.env.GREEN || 22;
+const BLUE = process.env.BLUE || 24;
+const led = require("./led-util")(RED, GREEN, BLUE);
+
+const host = process.env.KCAPP_API || "localhost";
+const port = process.env.PORT || 3000;
+const kcapp = require('kcapp-sio-client/kcapp')(host, port, 'kcapp-colors', "http");
 
 // Disable lights when we start
 led.turnOff();
