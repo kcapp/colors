@@ -43,6 +43,11 @@ function controlLights(socket) {
         }
     });
 
+    socket.on('order_changed', (data) => {
+        debug('Order changed');
+        setLightsToCurrentPlayer();
+    });
+
     socket.on('cancelled', (data) => {
         debug("Leg cancelled, disabling lights");
         led.turnOff();
