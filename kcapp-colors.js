@@ -11,21 +11,21 @@ const kcapp = require('kcapp-sio-client/kcapp')(host, port, 'kcapp-colors', "htt
 // Disable lights when we start
 led.turnOff();
 
-function controlLights(socket) {
+function controlLights(leg) {
     const setLightsToCurrentPlayer = () => {
-        const player = socket.currentPlayer.player;
+        const player = leg.currentPlayer.player;
         debug(`Setting color for ${player.name} = ${player.color}`);
         led.setColor(player.color);
     }
 
-    socket.on('score_update', (data) => {
+    leg.on('score_update', (data) => {
         if (data.leg.is_finished) {
             return;
         }
         setLightsToCurrentPlayer();
     });
 
-    socket.on('leg_finished', (data) => {
+    leg.on('leg_finished', (data) => {
         const match = data.match;
 
         debug("Blinking lights for 4s");
@@ -43,17 +43,16 @@ function controlLights(socket) {
         }
     });
 
-    socket.on('order_changed', (data) => {
-        debug('Order changed');
+    leg.on('order_changed', (data) => {
         setLightsToCurrentPlayer();
     });
 
-    socket.on('cancelled', (data) => {
+    leg.on('cancelled', (data) => {
         debug("Leg cancelled, disabling lights");
         led.turnOff();
     });
 
-    if (socket.leg && !socket.leg.is_finished) {
+    if (leg.leg && !leg.leg.is_finished) {
         setLightsToCurrentPlayer();
     }
 }
@@ -66,8 +65,8 @@ function connectToMatch(data) {
         if (config.has_led_lights) {
             const legId = match.current_leg_id;
             debug(`Connected to match ${match.id}`);
-            kcapp.connectLegNamespace(legId, (socket) => {
-                controlLights(socket);
+            kcapp.connectLegNamespace(legId, (leg) => {
+                controlLights(leg);
             });
         }
     }
