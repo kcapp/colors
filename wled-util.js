@@ -39,11 +39,21 @@ exports.setColor = async (color) => {
     const message = {
         on: true,
         transition: 0,
-        seg: {
+        seg: [ {
             fx: this.EFFECTS.SOLID,
             col: [ color.substring(1) ],
             bri: 255
-        }
+        }, 
+        {
+            fx: this.EFFECTS.SOLID,
+            col: [ color.substring(1) ],
+            bri: 255
+        },
+        {
+            fx: this.EFFECTS.SOLID,
+            col: [ color.substring(1) ],
+            bri: 255
+        } ]
     }
     write.bind(this)(message);
 }
@@ -63,26 +73,25 @@ exports.blink = (color, time, callback) => {
 exports.effect = (effect, color, pallete, sx = 100, ix = 100, time, callback) => {
     debug(`Setting effect ${effect}!`);
 
-    const message = { on: true, seg: { sx: sx, ix: ix, fx: effect } };
+    const message = { on: true, seg: [ { sx: sx, ix: ix, fx: effect }, { sx: sx, ix: ix, fx: effect },  { sx: sx, ix: ix, fx: effect } ] };
     if (color) {
-        message.seg.col = [ color.substring(1) ];
+        message.seg.forEach(seg => seg.col = [ color.substring(1) ] );
     }
     if (pallete) {
-        message.seg.pal = pallete;
+        message.seg.forEach(seg => seg.pal = pallete );
     }
     write.bind(this)(message);
     
     if (time) {
         setTimeout(() => {
             debug("Stopping effect...");
-            write.bind(this)({ on: false, seg: { fx: this.EFFECTS.SOLID }});
+            write.bind(this)({ on: false, seg: [ { fx: this.EFFECTS.SOLID }, { fx: this.EFFECTS.SOLID }, { fx: this.EFFECTS.SOLID }  ]});
             if (callback) {
                 callback();
             }
         }, time);
     }
 }
-
 
 module.exports = (path) => {
     this.port = new SerialPort({ path: path, baudRate: 115200 });
