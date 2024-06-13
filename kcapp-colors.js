@@ -133,7 +133,7 @@ function controlWLEDLights(leg) {
 function connectToMatch(data) {
     const match = data.match;
 
-    if (match.venue && match.venue.config) {
+    if (match.venue && match.venue.config && VENUE && VENUE == match.venue.id) {
         const config = match.venue.config;
         if (config.has_led_lights) {
             const legId = match.current_leg_id;

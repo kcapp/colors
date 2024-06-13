@@ -72,13 +72,15 @@ exports.effect = (effect, color, pallete, sx = 100, ix = 100, time, callback) =>
     }
     write.bind(this)(message);
     
-    setTimeout(() => {
-        debug("Stopping effect...");
-        write.bind(this)({ on: false, seg: { fx: this.EFFECTS.SOLID }});
-        if (callback) {
-            callback();
-        }
-    }, time);
+    if (time) {
+        setTimeout(() => {
+            debug("Stopping effect...");
+            write.bind(this)({ on: false, seg: { fx: this.EFFECTS.SOLID }});
+            if (callback) {
+                callback();
+            }
+        }, time);
+    }
 }
 
 
