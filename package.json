@@ -8,7 +8,8 @@
     },
     "dependencies": {
         "debug": "^4.3.4",
-        "kcapp-sio-client": "kcapp/kcapp-sio-client#v0.0.3"
+        "kcapp-sio-client": "kcapp/kcapp-sio-client#v0.0.3",
+        "serialport": "^12.0.0"
     },
     "optionalDependencies": {
         "pigpio": "^1.1.4"

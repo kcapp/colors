@@ -1,4 +1,4 @@
-const debug = require('debug')('kcapp-color-switcher:led');
+const debug = require('debug')('kcapp-color-switcher:pwm');
 const pigpio = process.env.NODE_ENV === "rpi" ? require('pigpio') : require('pigpio-mock');
 const Gpio = pigpio.Gpio;
 
