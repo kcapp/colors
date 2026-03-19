@@ -1,4 +1,4 @@
-const debug = require('debug')('kcapp-color-switcher:wled');
+const debug = require('debug')('kcapp-colors:wled-serial');
 const { SerialPort } = require('serialport')
 
 exports.EFFECTS = {

@@ -3,13 +3,15 @@
     "version": "0.0.3",
     "private": true,
     "scripts": {
-        "start": "NODE_ENV=rpi node kcapp-colors.js",
+        "dev": "node kcapp-colors.js",
+        "pwm": "NODE_ENV=rpi node kcapp-colors.js",
         "mock": "PIGPIO_NO_LOGGING=true node kcapp-colors.js"
     },
     "dependencies": {
-        "debug": "^4.3.4",
+        "debug": "^4.4.3",
         "kcapp-sio-client": "kcapp/kcapp-sio-client#v0.0.3",
-        "serialport": "^12.0.0"
+        "serialport": "^12.0.0",
+        "wled-client": "^0.22.1"
     },
     "optionalDependencies": {
         "pigpio": "^1.1.4"
