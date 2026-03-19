@@ -4,9 +4,9 @@ services:
     restart: unless-stopped
     environment:
       - VENUE=1
-      - KCAPP_API=192.168.1.100
+      - KCAPP_HOST=192.168.1.123
       - KCAPP_PORT=3000
-      - DEBUG=kcapp-colors:*
+      - DEBUG=kcapp*
       # WLED HTTP (set wled_url in venue config to use this)
       # No extra config needed, URL comes from venue config
 
